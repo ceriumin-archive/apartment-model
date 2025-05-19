@@ -68,9 +68,11 @@ using the dropna() function. Here is the data pre-processing function:
 ```python
 
 def preprocess_data(self):
+
   self.data.drop(columns=['Unnamed: 0', 'id', 'address'], inplace=True)
   self.data = self.data.dropna()
   self.data = pd.get_dummies(self.data)
+
   for column in self.data.select_dtypes(include=[np.number]).columns:
     if abs(self.data[column].skew()) > 0.5:
       self.data[column] = np.log1p(self.data[column])
@@ -150,6 +152,7 @@ def split_data(self):
   Y = self.data[self.target]
   X = self.data.drop(columns=['price'], axis=1)
   X = (X - X.mean()) / (X.std())
+
   self.X_train, self.X_test, self.Y_train, self.Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
 ```
 **X IN THIS FUNCTION IS DIVIDED TO ENSURE Z-SCORE STANDARDIZATION.**
@@ -168,5 +171,213 @@ def split_data(self):
 ```
 
 **X IN THIS FUNCTION IS DIVIDED TO ENSURE Z-SCORE STANDARDIZATION.**
+
+
+### 2.2 - Algorithm Selection
+
+This section describes the machine learning algorithms used for predictive modeling. A selection function dynamically chooses the model based on a specified `model_type`.
+
+#### 2.2.1 - Linear Regression
+
+Linear Regression was chosen for its simplicity and interpretability. It provides insights into linear relationships between the target variable and features, serving as a benchmark model.
+
+```python
+def linearRegression(X_train, Y_train, X_test, Y_test, visualize):
+    lr_model = Model(model_type='linear')
+    lr_model.train(X_train, Y_train)
+```
+
+---
+
+#### 2.2.2 - Random Forest Regressor
+
+Random Forest is an ensemble learning method that handles non-linear relationships well. It is robust to overfitting and captures complex patterns effectively. Hyperparameter tuning via grid search enhances its accuracy.
+
+```python
+def randomForest(X_train, Y_train, X_test, Y_test, visualize):
+    rf_model = Model(model_type='random_forest')
+
+    param_grid = {
+        'n_estimators': [100, 200, 300],
+        'max_depth': [None, 10, 20, 30],
+        'max_features': ['sqrt', 'log2', None]
+    }
+
+    best_params = rf_model.tune_hyperparameters(X_train, Y_train, param_grid)
+    rf_model = Model(model_type='random_forest', params=best_params)
+    rf_model.train(X_train, Y_train)
+```
+
+---
+
+#### 2.2.3 - Gradient Boosting (XGBoost)
+
+XGBoost is a powerful gradient boosting model with high predictive accuracy. It builds models sequentially to minimize errors and includes regularization to prevent overfitting.
+
+```python
+def xgBoost(X_train, Y_train, X_test, Y_test, visualize):
+    xgb_model = Model(model_type='xgboost')
+    xgb_model.train(X_train, Y_train)
+```
+
+---
+
+#### 2.2.4 - Neural Network
+
+Neural Networks are effective for capturing high-dimensional, non-linear relationships. Implemented using TensorFlow and Keras, this model was configured with two dense layers.
+
+```python
+def keras(X_train, Y_train, X_test, Y_test, visualize):
+    keras_model = Model(model_type='keras')
+    keras_model.model.fit(X_train, Y_train, epochs=100, 
+                          batch_size=32, validation_data=(X_test, Y_test), 
+                          verbose=0)
+    mean, r2 = keras_model.evaluate(X_test, Y_test)
+
+# Model structure
+elif model_type == 'keras':
+    self.model = keras.Sequential([
+        layers.Input(shape=(9,)),
+        layers.Dense(128, activation='relu'),
+        layers.Dense(1)
+    ])
+    self.model.compile(optimizer='adam', loss='mean_squared_error')
+```
+
+---
+
+#### 2.2.5 - Stacking
+
+Stacking combines Linear Regression, Random Forest, and XGBoost to leverage the strengths of each model and improve accuracy.
+
+```python
+elif model_type == 'all':
+    base_models = [
+        ('linear', LinearRegression()),
+        ('rf', RandomForestRegressor(n_estimators=100)),
+        ('xgb', XGBRegressor(objective='reg:squarederror'))
+    ]
+
+    meta_model = LinearRegression()
+    stacked_model = StackingRegressor(estimators=base_models, 
+                                      final_estimator=meta_model)
+
+    self.model = stacked_model
+```
+
+### 2.3 - Hyperparameter Tuning & Optimization
+
+Hyperparameter tuning is crucial to improve model performance. Values for each parameter were extensively tested to find optimal settings. The primary techniques used include **Grid Search** and **Cross-Validation**, which help in identifying the best performing model configurations while mitigating overfitting.
+
+#### Grid Search
+
+Grid search tests all combinations of parameters from a predefined set to find the best performing model configuration.
+
+```python
+def tune_hyperparameters(self, X_train, Y_train, param_grid):
+    grid_search = GridSearchCV(self.model, param_grid, cv=5, scoring='r2')
+    grid_search.fit(X_train, Y_train)
+    self.model = grid_search.best_estimator_
+    return grid_search.best_params_
+```
+
+#### Cross-Validation
+
+Cross-validation ensures that the model generalizes well by evaluating it across multiple folds of the training data.
+
+```python
+def cross_validate(self, model, X, Y):
+    scores = cross_val_score(model, X, Y, cv=5, scoring='r2')
+    return scores.mean(), scores.std()
+```
+
+> ⚠️ Note: While tuning significantly improved model performance, it increased computation time—especially for Random Forest. Despite the long runtime, the improvement in accuracy justified the extra processing time.
+
+### 3 - Model Evaluation
+
+Model evaluation is essential to assess how well a model performs. We use several metrics to measure the prediction accuracy and generalization of each model.
+
+#### Evaluation Metrics
+
+The following three metrics were used:
+
+- **Mean Squared Error (MSE)**: Measures the average squared difference between predicted and actual values.
+- **Mean Absolute Error (MAE)**: Measures the average absolute difference between predicted and actual values.
+- **R² Score (R²)**: Indicates the proportion of variance in the dependent variable predictable from the independent variables.
+
+```python
+def evaluate(self, X_test, Y_test):
+    Y_pred = self.predict(X_test)
+    mse = mean_squared_error(Y_test, Y_pred)
+    mae = mean_absolute_error(Y_test, Y_pred)
+    r2 = r2_score(Y_test, Y_pred)
+```
+
+---
+
+#### 3.1 - Linear Regression Scores
+
+- **R² Score**: 0.7282  
+- **MSE**: 0.06099  
+- **MAE**: 0.1820  
+- **Cross-Validation Score**: 0.6793  
+- **Standard Deviation**: 0.0775  
+
+> 🔎 Verdict: Too simplistic for non-linear housing price data. Fragile to outliers and underperforms on complex datasets.
+
+---
+
+#### 3.2 - Random Forest Scores
+
+- **R² Score**: 0.9184  
+- **MSE**: 0.0183  
+- **MAE**: 0.0798  
+- **Cross-Validation Score**: 0.8998  
+- **Standard Deviation**: 0.0088  
+
+> 🔎 Verdict: Very accurate, handles non-linear relationships well. Computationally expensive, but robust and effective.
+
+---
+
+#### 3.3 - XGBoost Scores
+
+- **R² Score**: 0.9109  
+- **MSE**: 0.0200  
+- **MAE**: 0.0937  
+- **Cross-Validation Score**: 0.8970  
+- **Standard Deviation**: 0.0090  
+
+> 🔎 Verdict: Nearly matches Random Forest in performance but significantly faster. Highly effective on structured, high-dimensional data.
+
+---
+
+#### 3.4 - Neural Network (Keras) Scores
+
+- **R² Score**: 0.7807  
+- **MSE**: 0.0492  
+- **MAE**: 0.1606  
+
+> ⚠️ Note: Keras does not support cross-validation natively. The model may overfit; considered a “black-box” and is harder to interpret.
+
+---
+
+#### 3.5 - Stacking Ensemble Scores
+
+- **R² Score**: 0.9212  
+- **MSE**: 0.0177  
+- **MAE**: 0.0837  
+- **Cross-Validation Score**: 0.9038  
+- **Standard Deviation**: 0.0094  
+
+> 🔎 Verdict: Slightly better than individual models but computationally expensive and more complex to implement and tune.
+
+---
+
+#### 3.6 - Final Verdict
+
+XGBoost stands out as the optimal model, balancing **accuracy**, **efficiency**, and **interpretability**. Linear Regression performed the worst due to the dataset’s complexity and non-linear nature. Stacking showed marginal improvements but at a higher computational cost.
+
+
+
 
 
