@@ -173,11 +173,11 @@ def split_data(self):
 **X IN THIS FUNCTION IS DIVIDED TO ENSURE Z-SCORE STANDARDIZATION.**
 
 
-### 2.2 - Algorithm Selection
+### Algorithm Selection
 
 This section describes the machine learning algorithms used for predictive modeling. A selection function dynamically chooses the model based on a specified `model_type`.
 
-#### 2.2.1 - Linear Regression
+#### Linear Regression
 
 Linear Regression was chosen for its simplicity and interpretability. It provides insights into linear relationships between the target variable and features, serving as a benchmark model.
 
@@ -189,7 +189,7 @@ def linearRegression(X_train, Y_train, X_test, Y_test, visualize):
 
 ---
 
-#### 2.2.2 - Random Forest Regressor
+#### Random Forest Regressor
 
 Random Forest is an ensemble learning method that handles non-linear relationships well. It is robust to overfitting and captures complex patterns effectively. Hyperparameter tuning via grid search enhances its accuracy.
 
@@ -210,7 +210,7 @@ def randomForest(X_train, Y_train, X_test, Y_test, visualize):
 
 ---
 
-#### 2.2.3 - Gradient Boosting (XGBoost)
+#### Gradient Boosting (XGBoost)
 
 XGBoost is a powerful gradient boosting model with high predictive accuracy. It builds models sequentially to minimize errors and includes regularization to prevent overfitting.
 
@@ -222,7 +222,7 @@ def xgBoost(X_train, Y_train, X_test, Y_test, visualize):
 
 ---
 
-#### 2.2.4 - Neural Network
+#### Neural Network
 
 Neural Networks are effective for capturing high-dimensional, non-linear relationships. Implemented using TensorFlow and Keras, this model was configured with two dense layers.
 
@@ -246,7 +246,7 @@ elif model_type == 'keras':
 
 ---
 
-#### 2.2.5 - Stacking
+#### Stacking
 
 Stacking combines Linear Regression, Random Forest, and XGBoost to leverage the strengths of each model and improve accuracy.
 
@@ -265,7 +265,7 @@ elif model_type == 'all':
     self.model = stacked_model
 ```
 
-### 2.3 - Hyperparameter Tuning & Optimization
+### Hyperparameter Tuning & Optimization
 
 Hyperparameter tuning is crucial to improve model performance. Values for each parameter were extensively tested to find optimal settings. The primary techniques used include **Grid Search** and **Cross-Validation**, which help in identifying the best performing model configurations while mitigating overfitting.
 
@@ -293,7 +293,7 @@ def cross_validate(self, model, X, Y):
 
 > ⚠️ Note: While tuning significantly improved model performance, it increased computation time—especially for Random Forest. Despite the long runtime, the improvement in accuracy justified the extra processing time.
 
-### 3 - Model Evaluation
+### Model Evaluation
 
 Model evaluation is essential to assess how well a model performs. We use several metrics to measure the prediction accuracy and generalization of each model.
 
@@ -315,7 +315,7 @@ def evaluate(self, X_test, Y_test):
 
 ---
 
-#### 3.1 - Linear Regression Scores
+#### Linear Regression Scores
 
 - **R² Score**: 0.7282  
 - **MSE**: 0.06099  
@@ -327,7 +327,7 @@ def evaluate(self, X_test, Y_test):
 
 ---
 
-#### 3.2 - Random Forest Scores
+#### Random Forest Scores
 
 - **R² Score**: 0.9184  
 - **MSE**: 0.0183  
@@ -339,7 +339,7 @@ def evaluate(self, X_test, Y_test):
 
 ---
 
-#### 3.3 - XGBoost Scores
+#### XGBoost Scores
 
 - **R² Score**: 0.9109  
 - **MSE**: 0.0200  
@@ -351,7 +351,7 @@ def evaluate(self, X_test, Y_test):
 
 ---
 
-#### 3.4 - Neural Network (Keras) Scores
+#### Neural Network (Keras) Scores
 
 - **R² Score**: 0.7807  
 - **MSE**: 0.0492  
@@ -361,7 +361,7 @@ def evaluate(self, X_test, Y_test):
 
 ---
 
-#### 3.5 - Stacking Ensemble Scores
+#### Stacking Ensemble Scores
 
 - **R² Score**: 0.9212  
 - **MSE**: 0.0177  
@@ -373,9 +373,137 @@ def evaluate(self, X_test, Y_test):
 
 ---
 
-#### 3.6 - Final Verdict
+#### Final Verdict
 
 XGBoost stands out as the optimal model, balancing **accuracy**, **efficiency**, and **interpretability**. Linear Regression performed the worst due to the dataset’s complexity and non-linear nature. Stacking showed marginal improvements but at a higher computational cost.
+
+## Visualization
+
+Visualizing results is essential for understanding model performance and identifying areas for improvement. This section includes visual tools to assess accuracy and diagnose potential issues.
+
+### Key Visualizations
+
+#### Model Evaluation
+
+- **Predicted vs Actual**: Compares predicted values against true values using a regression plot.
+- **Feature Importance**: Displays the impact of each feature in tree-based models.
+
+#### Error Analysis
+
+- **Cross Validation**: Assesses model stability across different folds.
+- **Residual Plot**: Reveals patterns in prediction errors to detect systematic issues.
+
+```python
+def importance(self, model, name, features):
+    importances = model.feature_importances_
+    indices = np.argsort(importances)[::-1]
+    plt.figure(figsize=(10, 6))
+    plt.title(f"{name}: Feature Importance")
+    plt.bar(range(len(features)), importances[indices])
+    plt.xticks(range(len(importances)), [features[i] for i in indices], rotation=90)
+    plt.tight_layout()
+    plt.show()
+```
+
+---
+
+### Linear Regression
+
+**Regression Plot**  
+**[Placeholder for Linear Regression Regression Plot]**
+
+**K-Fold Cross Validation**  
+**[Placeholder for Linear Regression Cross Validation Plot]**
+
+**Residual Plot**  
+**[Placeholder for Linear Regression Residual Plot]**
+
+**Verdict**  
+Linear Regression is unsuitable for this dataset. It underfits and struggles with complex, non-linear relationships, showing clear systematic errors.
+
+---
+
+### Random Forest
+
+**Regression Plot**  
+**[Placeholder for Random Forest Regression Plot]**
+
+**K-Fold Cross Validation**  
+**[Placeholder for Random Forest Cross Validation Plot]**
+
+**Residual Plot**  
+**[Placeholder for Random Forest Residual Plot]**
+
+**Feature Importance**  
+**[Placeholder for Random Forest Feature Importance Plot]**
+
+**Verdict**  
+Performs accurately and robustly, though training time is high. Best suited for capturing non-linear patterns in housing data.
+
+---
+
+### XGBoost
+
+**Regression Plot**  
+**[Placeholder for XGBoost Regression Plot]**
+
+**K-Fold Cross Validation**  
+**[Placeholder for XGBoost Cross Validation Plot]**
+
+**Residual Plot**  
+**[Placeholder for XGBoost Residual Plot]**
+
+**Feature Importance**  
+**[Placeholder for XGBoost Feature Importance Plot]**
+
+**Verdict**  
+Almost matches Random Forest in performance, but with better speed and efficiency. Excels in structured, high-dimensional data.
+
+---
+
+### Neural Network
+
+**Regression Plot**  
+**[Placeholder for Neural Network Regression Plot]**
+
+**Verdict**  
+Too complex and opaque for this task. Likely overfitting and difficult to interpret. Not well-suited without extensive tuning and more data.
+
+---
+
+### Stacking Ensemble
+
+**Regression Plot**  
+**[Placeholder for Stacking Regression Plot]**
+
+**K-Fold Cross Validation**  
+**[Placeholder for Stacking Cross Validation Plot]**
+
+**Residual Plot**  
+**[Placeholder for Stacking Residual Plot]**
+
+**Verdict**  
+Slightly better performance than individual models but demands far more computational resources, making it inefficient for regular use.
+
+---
+
+### Summary
+
+- **XGBoost** was the most effective model overall, balancing speed, accuracy, and reliability.
+- **Linear Regression** performed the worst due to its inability to handle complex patterns.
+- **Stacking** provided marginal improvements but was computationally heavy.
+- **Neural Networks** showed promise but were too opaque and inefficient for the dataset size.
+
+This pipeline could be adapted to other real estate markets with similar data structures. While perfect predictions are unrealistic, the models provide valuable price estimates to support buyers, sellers, and investors.
+
+---
+
+## References
+
+- [Kaggle Dataset - Polish Apartment Prices](https://www.kaggle.com/datasets/dawidcegielski/house-prices-in-poland)
+
+
+
 
 
 
