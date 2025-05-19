@@ -410,13 +410,13 @@ def importance(self, model, name, features):
 ### Linear Regression
 
 **Regression Plot**  
-**[Placeholder for Linear Regression Regression Plot]**
+![Regression Plot](assets/2.png)
 
 **K-Fold Cross Validation**  
-**[Placeholder for Linear Regression Cross Validation Plot]**
+![K-Fold Cross Validation](assets/3.png)
 
 **Residual Plot**  
-**[Placeholder for Linear Regression Residual Plot]**
+![Residual Plot](assets/4.png)
 
 **Verdict**  
 Linear Regression is unsuitable for this dataset. It underfits and struggles with complex, non-linear relationships, showing clear systematic errors.
@@ -426,16 +426,16 @@ Linear Regression is unsuitable for this dataset. It underfits and struggles wit
 ### Random Forest
 
 **Regression Plot**  
-**[Placeholder for Random Forest Regression Plot]**
+![Placeholder](assets/5.png)
 
 **K-Fold Cross Validation**  
-**[Placeholder for Random Forest Cross Validation Plot]**
+![Placeholder](assets/6.png)
 
 **Residual Plot**  
-**[Placeholder for Random Forest Residual Plot]**
+![Placeholder](assets/7.png)
 
 **Feature Importance**  
-**[Placeholder for Random Forest Feature Importance Plot]**
+![Placeholder](assets/8.png)
 
 **Verdict**  
 Performs accurately and robustly, though training time is high. Best suited for capturing non-linear patterns in housing data.
@@ -445,16 +445,16 @@ Performs accurately and robustly, though training time is high. Best suited for 
 ### XGBoost
 
 **Regression Plot**  
-**[Placeholder for XGBoost Regression Plot]**
+![Placeholder](assets/9.png)
 
 **K-Fold Cross Validation**  
-**[Placeholder for XGBoost Cross Validation Plot]**
+![Placeholder](assets/10.png)
 
 **Residual Plot**  
-**[Placeholder for XGBoost Residual Plot]**
+![Placeholder](assets/11.png)
 
 **Feature Importance**  
-**[Placeholder for XGBoost Feature Importance Plot]**
+![Placeholder](assets/12.png)
 
 **Verdict**  
 Almost matches Random Forest in performance, but with better speed and efficiency. Excels in structured, high-dimensional data.
@@ -464,7 +464,7 @@ Almost matches Random Forest in performance, but with better speed and efficienc
 ### Neural Network
 
 **Regression Plot**  
-**[Placeholder for Neural Network Regression Plot]**
+![Placeholder](assets/13.png)
 
 **Verdict**  
 Too complex and opaque for this task. Likely overfitting and difficult to interpret. Not well-suited without extensive tuning and more data.
@@ -474,13 +474,13 @@ Too complex and opaque for this task. Likely overfitting and difficult to interp
 ### Stacking Ensemble
 
 **Regression Plot**  
-**[Placeholder for Stacking Regression Plot]**
+![Placeholder](assets/14.png)
 
 **K-Fold Cross Validation**  
-**[Placeholder for Stacking Cross Validation Plot]**
+![Placeholder](assets/15.png)
 
 **Residual Plot**  
-**[Placeholder for Stacking Residual Plot]**
+![Placeholder](assets/16.png)
 
 **Verdict**  
 Slightly better performance than individual models but demands far more computational resources, making it inefficient for regular use.
